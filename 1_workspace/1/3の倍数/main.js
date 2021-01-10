@@ -1,10 +1,12 @@
-console.log("OK!");
+// console.log("OK!");
 
 // FizzBuzz(30);
 // FineMan(40);
 
+countUp_EverySecond(10);
 
-function FizzBuzz(num){
+
+function fizzBuzz(num){
   for(let i = 1; i <= num; i++){ //numの数だけfor回す
     let output = '';
 
@@ -26,7 +28,7 @@ function FizzBuzz(num){
 }
 
 //3がつくと元気になる関数
-function FineMan(num){
+function fineMan(num){
   for(let i = 1; i <= num; i++){ //numの数だけfor回す
     let output = i.toString(10);
 
@@ -37,4 +39,20 @@ function FineMan(num){
 
     console.log(output); //コンソールに出力
   }
+}
+
+//毎秒数えつつ3の倍数で元気になる関数
+function countUp_EverySecond(num){
+  let count = 0;
+  setInterval(function(){
+    count++;
+    if(count > num){ return; }
+
+    let output = count;
+    if(count % 3 === 0){
+      output += '!!!';
+    }
+
+    console.log(output);
+  }, 1000);
 }
