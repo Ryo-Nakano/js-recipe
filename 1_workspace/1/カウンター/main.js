@@ -65,13 +65,13 @@ button_equal.onclick = function(){
   );
   calc_show = calc();
   updateDisplay();
-}
+};
 
 //クリアボタン
 button_clear.onclick = function(){
   calc_show = '';
   display_result.textContent = 0;
-}
+};
 
 function updateDisplay(){
   display_result.textContent = calc_show;
