@@ -19,7 +19,10 @@ Deletボタンについて、どのボタンが押されたのかを
 /**
  * 【todo memo】
  * ▶︎list-container追加時
- * ・listDataの中に新しいオブジェクトが追加されるように
+ * ・listDatasの中に新しいオブジェクトが追加されるように
+ * 
+ * ▶︎todo追加時
+ * ・todoの追加がlistDatasに反映されるように
  */
 
 //各要素をIDで取得
@@ -75,9 +78,21 @@ for(let i = 0; i < listDatas.length; i++){ //listDatasの要素数分for回す
 addButton_registerEvent()
 
 addListButton.onclick = function(){
+  //View
   let listContainer = creat_listContainer()
   mainContainer.append(listContainer)
   addButton_registerEvent()
+
+  //データ(めちゃくちゃ汚いやり方だけど許して...)
+  const title = listContainer.getElementsByClassName('list-header').textContent
+
+  const obj = {
+    title : title,
+    todos : []
+  }
+
+  listDatas.push(obj)
+  console.log(listDatas[listDatas.length - 1])
 }
 
 
@@ -94,8 +109,8 @@ function addButton_registerEvent(){
   for(let i = 0; i < addButtons.length; i++){
     const addButton = addButtons[i]
     addButton.onclick = function(){
-      console.log('pushed_' + i) //←iが実質index的な働きをしてくれそう
-  
+      
+      // === View ===
       //対象となるlist-containerを取得
       const listContainer = document.getElementsByClassName('list-container')[i]
   
@@ -120,8 +135,11 @@ function addButton_registerEvent(){
   
       // 入力欄を空にする
       inputTodo.value = ''
-  
-      console.log(listDatas) //情報の更新も伴っているか確認
+
+      // === データ ===
+      console.log('before : ' + listDatas[i].todos)
+      listDatas[i].todos.push(userInput)
+      console.log('after : ' + listDatas[i].todos)
     }
   }
 
@@ -140,8 +158,6 @@ function addButton_registerEvent(){
         //入力欄に何も入力されていないとき → 処理離脱
         if(userInput === ''){ return }
 
-        console.log(userInput)
-
         //カードを作成する
         const card = creatCard(userInput) 
 
@@ -151,6 +167,11 @@ function addButton_registerEvent(){
 
         // 入力欄を空にする
         inputTodo.value = ''
+
+        // === データ ===
+        console.log('before : ' + listDatas[i].todos)
+        listDatas[i].todos.push(userInput)
+        console.log('after : ' + listDatas[i].todos)
       }
     });
   }
