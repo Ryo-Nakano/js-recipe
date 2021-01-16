@@ -16,6 +16,12 @@ Deletボタンについて、どのボタンが押されたのかを
 表示とデータの同期もいける。
 */
 
+/**
+ * 【todo memo】
+ * ▶︎list-container追加時
+ * ・listDataの中に新しいオブジェクトが追加されるように
+ */
+
 //各要素をIDで取得
 const mainContainer = document.getElementsByClassName('main-container')[0] //main-container
 const inputElement = document.getElementById('input-todo') //todo入力欄
@@ -29,8 +35,8 @@ let listDatas = [
     todos : ['hoge_1', 'mage_1']
   },
   {
-    title : 'list_2',
-    todos : ['hoge_2', 'mage_2', 'guhe_2']
+    title : 'list_uho',
+    todos : ['hoge_2', 'mage_2', 'guhe_2', 'uho_2', 'fuga_2']
   },
   {
     title : 'list_2',
@@ -171,9 +177,27 @@ function creatCard(text){ //引数に入力された値を取る
 
   // 削除ボタン を押したときの処理を登録
   deleteButton.onclick = function(e){
-    // カードを削除する
-    card.remove()
-    console.log(e) //情報の更新も伴っているか確認
+    
+  //card-containerの中でどのカードが削除されたのか取得(index_card)
+  const deletedCard = e.path[1]
+  const thisCardsContainer = e.path[2]
+  let cards = thisCardsContainer.getElementsByClassName('card')
+  cards = [].slice.call(cards); //HTMLCollectionから配列を作成
+  var index_todo = cards.indexOf(deletedCard); //要素の順番を取得
+
+  //どのlist-containerに含まれるtodoが削除されたのか取得(index_list)
+  const thisListContainer = e.path[3]
+  let listContainers = document.getElementsByClassName('list-container')
+  listContainers = [].slice.call(listContainers); //HTMLCollectionから配列を作成
+  var index_list = listContainers.indexOf(thisListContainer); //要素の順番を取得
+
+  //listDatasから該当するデータを削除
+  console.log(`before : ` + listDatas[index_list].todos)
+  listDatas[index_list].todos.splice(index_todo, 1)
+  console.log(`after : ` + listDatas[index_list].todos)
+
+  // カードを削除する(view)
+  card.remove()
   }
 
   // 削除ボタン を card の中に追加する
@@ -191,9 +215,10 @@ function creat_cardsContainer(){
 }
 
 // list-headerを作る関数
-function creat_listHeader(){
+function creat_listHeader(title){
   const listHeader = document.createElement('div') //div要素作る
   listHeader.className = 'list-header' //クラス名を"list-header"に
+  listHeader.textContent = title
 
   return listHeader
 }
@@ -224,12 +249,16 @@ function creat_listFooter(){
 // list-containerを作る関数
 function creat_listContainer(){
 
+  //現在のlist-containerの数を取得
+  const listContainerNum = document.getElementsByClassName('list-container').length
+
   //list-containerを作成
   const listContainer = document.createElement('div') //div要素作る
   listContainer.className = 'list-container' //クラス名を"cards-container"に
 
   //list-headerを作成 → list-containerに格納
-  const listHeader = creat_listHeader()
+  const listTitle = 'List_' + (listContainerNum + 1)
+  const listHeader = creat_listHeader(listTitle)
   listContainer.append(listHeader)
 
   //cards-containerを作成 → list-containerに格納
