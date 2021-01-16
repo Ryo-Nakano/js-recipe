@@ -82,8 +82,9 @@ addListButton.onclick = function(){
 
 
 function addButton_registerEvent(){
-  const addButtons = document.getElementsByClassName('input-button') //追加ボタン
 
+  // === 追加ボタンが押された時の処理を登録 ===
+  const addButtons = document.getElementsByClassName('input-button') //追加ボタン
   for(let i = 0; i < addButtons.length; i++){
     const addButton = addButtons[i]
     addButton.onclick = function(){
@@ -101,10 +102,7 @@ function addButton_registerEvent(){
       const userInput = inputTodo.value
   
       //入力欄に何も入力されていないとき → 処理離脱
-      if(userInput === ''){
-        alert('何も入力されていません！！')
-        return 
-      }
+      if(userInput === ''){ return }
   
       //カードを作成する
       const card = creatCard(userInput) 
@@ -119,6 +117,36 @@ function addButton_registerEvent(){
   
       console.log(listDatas) //情報の更新も伴っているか確認
     }
+  }
+
+  // === フォーム入力中にEnterキーが押された時の処理を登録 ===
+  const inputTodos = document.getElementsByClassName('input-todo')
+  for(let i = 0; i < inputTodos.length; i++){
+    let inputTodo = inputTodos[i]
+    inputTodo.addEventListener('keypress', function(e){
+
+      //Enterキーが押された時の処理
+      if (e.keyCode === 13) {
+
+        //ユーザーの入力情報を取得
+        const userInput = inputTodo.value
+
+        //入力欄に何も入力されていないとき → 処理離脱
+        if(userInput === ''){ return }
+
+        console.log(userInput)
+
+        //カードを作成する
+        const card = creatCard(userInput) 
+
+        // card を container の中に追加する
+        const cardsContainer = document.getElementsByClassName('cards-container')[i] //対象となるcards-containerを取得
+        cardsContainer.append(card) //DOMツリーに追加
+
+        // 入力欄を空にする
+        inputTodo.value = ''
+      }
+    });
   }
 }
 
@@ -142,10 +170,10 @@ function creatCard(text){ //引数に入力された値を取る
   deleteButton.className = 'delete'
 
   // 削除ボタン を押したときの処理を登録
-  deleteButton.onclick = function(){
+  deleteButton.onclick = function(e){
     // カードを削除する
     card.remove()
-    console.log(listDatas) //情報の更新も伴っているか確認
+    console.log(e) //情報の更新も伴っているか確認
   }
 
   // 削除ボタン を card の中に追加する
