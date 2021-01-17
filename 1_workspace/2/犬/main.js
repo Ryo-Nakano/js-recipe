@@ -47,7 +47,6 @@ const catImg = document.getElementById('cat-image')
 const nope_button = document.getElementById('nope')
 
 nope_button.onclick = function(){
-  console.log('nope')
   fetchBreeds()
 }
 
@@ -75,7 +74,7 @@ function fetchBreeds(){
     })
     .then((data) => {
 
-      console.log(data)
+      // console.log(data)
 
       let breeds = []
       for(let i = 0; i < data.length; i++){
@@ -104,7 +103,7 @@ function fetchBreeds(){
         breeds.splice(randomNum, 1)
       }
 
-      console.log(selectedBreeds)
+      // console.log(selectedBreeds)
 
       //選んだやつをViewに適応
       for(let i = 0; i < catSelect_buttons.length; i++){
@@ -133,7 +132,81 @@ function getRandomNum( min, max ) {
   return randomNum;
 }
 
-// === === === === === === === === === === === ===
 
 fetchBreeds()
 
+// === === === === === === === === === === === ===
+// 以下、短縮水産🐟_Web
+// === === === === === === === === === === === ===
+
+//各要素の取得
+const inputArea = document.getElementById('input-url')
+const outputArea = document.getElementById('output-url')
+const go_button = document.getElementById('go-button')
+
+//BitlyAPIを用いて短縮URLを作成 → 表示する関数
+function createBitlyUrl(inputUrl){
+  const OAUTH_TOKEN = '9a85ca17bba6c9c0ed35a65ee566169a71239049'
+  const endpoint = 'https://api-ssl.bitly.com/v4';
+  const requestUrl = endpoint + '/shorten';
+
+  const headers = {
+    'Authorization' : 'Bearer ' + OAUTH_TOKEN,
+    'Content-Type': 'application/json',
+  }
+
+  const body = {
+    'long_url' : inputUrl
+  }
+
+  fetch(requestUrl, {
+    method : 'POST',
+    headers : headers,
+    body : JSON.stringify(body)
+  })
+    .then((res) => {
+      return res.json()
+    })
+    .then((data) => {
+      console.log(data.link)
+      const shortUrl = data.link
+      if (typeof shortUrl  == 'undefined'){
+        alert('短縮できませんでした...🐟')
+        return
+      }
+      outputArea.value = shortUrl
+    })
+}
+
+//Goボタンが押された時に呼ばれる処理
+go_button.onclick = function(){
+  const inputUrl = inputArea.value
+
+  //入力された文字列がURLでなければ処理離脱
+  if(inputUrl.indexOf("http") == -1){
+    alert('URLを入力してください...！🙏')
+    return
+  }
+
+  console.log(inputUrl)
+  createBitlyUrl(inputUrl)
+}
+
+inputArea.addEventListener('keypress', function(e){
+  //Enterキーが押された時の処理
+  if (e.keyCode === 13) {
+    const inputUrl = inputArea.value
+
+    //入力された文字列がURLでなければ処理離脱
+    if(inputUrl.indexOf("http") == -1){
+      alert('URLを入力してください...！🙏')
+      return
+    }
+
+    console.log(inputUrl)
+      createBitlyUrl(inputUrl)
+    }
+})
+
+// const url = 'ht://developer.mozilla.org/ja/docs/Web/API/Fetch_API/Using_Fetch'
+// createBitlyUrl(url)

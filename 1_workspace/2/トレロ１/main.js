@@ -144,7 +144,7 @@ function addButton_registerEvent(){
         listDatas[i].todos.push(userInput)
         console.log('after : ' + listDatas[i].todos)
       }
-    });
+    })
   }
 }
 
