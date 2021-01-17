@@ -1,30 +1,3 @@
-/*
-【NA memo】
-
-見た目部分はカードの追加/削除とlist-containerの追加もできるようになった。
-見た目の変化に伴ってデータも変わるのはできてない。
-
-Addボタンの方はボタンのindexをとることができるようになってるから
-Deletボタンの方もAddボタンと同じ形でindex的なの取って来られるかな...？
-
-てかイベントハンドラの引数うまく使えばもっと楽してできそう感
-引数で何取ってこられるのか良くわかってなかったけど
-ちょろっと調べた感じイケそうだからちょいと続きやってみる。
-
-Deletボタンについて、どのボタンが押されたのかを
-特定することができるようになれば
-表示とデータの同期もいける。
-*/
-
-/**
- * 【todo memo】
- * ▶︎list-container追加時
- * ・listDatasの中に新しいオブジェクトが追加されるように
- * 
- * ▶︎todo追加時
- * ・todoの追加がlistDatasに反映されるように
- */
-
 //各要素をIDで取得
 const mainContainer = document.getElementsByClassName('main-container')[0] //main-container
 const inputElement = document.getElementById('input-todo') //todo入力欄
@@ -127,8 +100,6 @@ function addButton_registerEvent(){
   
       //カードを作成する
       const card = creatCard(userInput) 
-  
-      console.log(card)
   
       // card を container の中に追加する
       cardsContainer.append(card) //DOMツリーに追加
