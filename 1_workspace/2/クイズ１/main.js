@@ -91,3 +91,5 @@ function quiz(){
 
 quiz() //クイズを実行
 
+
+
