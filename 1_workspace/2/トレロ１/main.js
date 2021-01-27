@@ -1,24 +1,28 @@
 //各要素をIDで取得
 const mainContainer = document.getElementsByClassName('main-container')[0] //main-container
-const inputElement = document.getElementById('input-todo') //todo入力欄
+// const inputElement = document.getElementById('input-todo') //todo入力欄
 const addListButton = document.getElementById('add-list-button')
 
 //こんな感じでデータを持てばいけるか...？
 //配列の順番とlist-containerの順番が対応
-let listDatas = [
-  {
-    title : 'list_1',
-    todos : ['hoge_1', 'mage_1']
-  },
-  {
-    title : 'list_uho',
-    todos : ['hoge_2', 'mage_2', 'guhe_2', 'uho_2', 'fuga_2']
-  },
-  {
-    title : 'list_2',
-    todos : ['hoge_2', 'mage_2']
-  },
-]
+// let listDatas = [
+//   {
+//     title : 'list_1',
+//     todos : ['hoge_1', 'mage_1']
+//   },
+//   {
+//     title : 'list_uho',
+//     todos : ['hoge_2', 'mage_2', 'guhe_2', 'uho_2', 'fuga_2']
+//   },
+//   {
+//     title : 'list_2',
+//     todos : ['hoge_2', 'mage_2']
+//   },
+// ]
+
+let listDatas = []
+listDatas = JSON.parse(localStorage.getItem('listDatas'))
+console.log(listDatas)
 
 //一旦↑のデータを出力してみよう。
 
@@ -50,6 +54,7 @@ for(let i = 0; i < listDatas.length; i++){ //listDatasの要素数分for回す
 
 addButton_registerEvent()
 
+//『AddList』ボタンが押されたときに呼ばれる処理
 addListButton.onclick = function(){
   //View
   let listContainer = creat_listContainer()
@@ -66,12 +71,14 @@ addListButton.onclick = function(){
 
   listDatas.push(obj)
   console.log(listDatas[listDatas.length - 1])
+
+  const listDatas_json = JSON.stringify(listDatas)
+  localStorage.setItem('listDatas', listDatas_json)
 }
 
 
 
  //==========================================================
-
 
 
 
@@ -111,6 +118,10 @@ function addButton_registerEvent(){
       console.log('before : ' + listDatas[i].todos)
       listDatas[i].todos.push(userInput)
       console.log('after : ' + listDatas[i].todos)
+
+      //localStorageにもデータ保存
+      const listDatas_json = JSON.stringify(listDatas)
+      localStorage.setItem('listDatas', listDatas_json)
     }
   }
 
@@ -143,6 +154,10 @@ function addButton_registerEvent(){
         console.log('before : ' + listDatas[i].todos)
         listDatas[i].todos.push(userInput)
         console.log('after : ' + listDatas[i].todos)
+
+        //localStorageにもデータ保存
+        const listDatas_json = JSON.stringify(listDatas)
+        localStorage.setItem('listDatas', listDatas_json)
       }
     })
   }

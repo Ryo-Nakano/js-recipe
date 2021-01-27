@@ -207,6 +207,3 @@ inputArea.addEventListener('keypress', function(e){
       createBitlyUrl(inputUrl)
     }
 })
-
-// const url = 'ht://developer.mozilla.org/ja/docs/Web/API/Fetch_API/Using_Fetch'
-// createBitlyUrl(url)
