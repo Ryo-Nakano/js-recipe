@@ -14,28 +14,106 @@
  * 『一時訂正』『再開』できるようにしたい
  */
 
-const genLabel = document.getElementById('gen');
+const gen_label = document.getElementById('gen');
+const lifeCount_label = document.getElementById('life-count');
+const interval_label = document.getElementById('interval-label');
+
 const restart_button = document.getElementById('restart-button');
+const stop_button = document.getElementById('stop-button');
+const clear_button = document.getElementById('clear-button');
+const interval_apply_button = document.getElementById('interval-apply-button');
 
 let prevGen = [];
 let genCount = 0; //何世代目か数える変数
+let isPlaying = true; //再生中かどうか管理する変数
+
+const canvas_x = 2000; //Canvasの幅
+const canvas_y = 1000; //Canvasの高さ
+
+const pixel = 5; //セルひとつあたりの幅
+const width_x = canvas_x / pixel; //セルの横方向の個数
+const width_y = canvas_y / pixel; //セルの縦方向の個数
+const ratio = 10; //初期状態としてLifeが生じる確率(1つのセルあたり)
+
+let interval = 5; //どのくらいの頻度で世代を更新していくか(値が小さいほど高頻度)
+interval_label.value = interval;
 
 restart_button.onclick = function(){
-  prevGen = makeGen(150, 100, 20);
+  //コロニーを刷新
+  prevGen = makeGen(width_x, width_y, ratio);
+
+  //世代数の表示を更新
   genCount = 0;
+  gen_label.textContent = genCount;
+
+  //Life数の表示を更新
+  const lifeCount = countLifeNum();
+  lifeCount_label.textContent = lifeCount;
+
+  view(prevGen);
 };
+
+clear_button.onclick = function(){
+
+  //コロニーを0に
+  prevGen = makeGen(width_x, width_y, 0);
+
+  //世代数の表示を更新
+  genCount = 0;
+  gen_label.textContent = genCount;
+
+  //Life数の表示を更新
+  const lifeCount = countLifeNum();
+  lifeCount_label.textContent = lifeCount;
+
+  view(prevGen);
+};
+
+stop_button.onclick = function(){
+  isPlaying = !isPlaying; //isPlayingの値を反転
+  if(isPlaying == true){
+    stop_button.textContent = '　Stop　';
+  }
+  else{
+    stop_button.textContent = 'Continue';
+  }
+
+};
+
+interval_apply_button.onclick = function(){
+  const interval_value = interval_label.value;
+  interval = interval_value;
+};
+
+interval_label.onkeypress = function(e){
+  const key = e.keyCode || e.charCode || 0;
+  // 13はEnterキーのキーコード
+  if (key !== 13) { return } //入力がエンターキー以外なら処理離脱
+  
+  const interval_value = interval_label.value;
+  interval = interval_value;
+}
 
 function setup() {
   
-  createCanvas(1500, 1000);
+  createCanvas(canvas_x, canvas_y);
   
-  prevGen = makeGen(150,100, 20);
+  prevGen = makeGen(width_x, width_y, ratio);
+}
 
-  setInterval(function(){
-    main();
-    genCount++;
-    genLabel.textContent = genCount;
-  }, 100);
+function draw(){
+  if(isPlaying != true){ return }
+  if(frameCount % interval !== 0){ return }
+  // console.log(frameCount);
+  main();
+
+  //世代数を表示
+  genCount++;
+  gen_label.textContent = genCount;
+
+  //Life数を表示
+  const lifeCount = countLifeNum();
+  lifeCount_label.textContent = lifeCount;
 }
 
 
@@ -70,7 +148,6 @@ function keyTyped(){
 
     // console.clear(); //コンソール削除
     main();
-    
   }
 }
 
@@ -157,7 +234,6 @@ function countLife(x, y, preG){
       if(target === 1){
         count++;
       }
-      //まだカウントはしてないけど、正しく数えることはできてそう！
     }
   }
 
@@ -170,7 +246,7 @@ function view(array){
   //viewをリセット
   background(240);
 
-  const w = 10; //セルひとつあたりの幅
+  // const pixel = 5; //セルひとつあたりの幅
   const x_length = array[0].length;
   const y_length = array.length;
 
@@ -179,7 +255,7 @@ function view(array){
       const cell = array[y][x];
       if(cell !== 1){ continue; }
       fill('rgba(0, 255, 220, 1)');
-      rect(w*x, w*y, w);
+      rect(pixel*x, pixel*y, pixel);
     }
   }
 }
@@ -203,6 +279,19 @@ function makeGen(x, y, ratio){ //ratioはセルが"生きているセル"にな�
   }
 
   return gen;
+}
+
+//現存するLife数を数え上げる関数
+function countLifeNum(){
+  //Lifeの数を数える
+  let count = 0;
+  for(let i = 0; i < prevGen.length; i++){
+    for(let j = 0; j < prevGen[0].length; j++){
+      const cell = prevGen[i][j];
+      if(cell === 1){ count++ }
+    }
+  }
+  return count;
 }
 
 //min以上max未満の整数をランダムで返す関数
