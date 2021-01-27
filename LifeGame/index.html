@@ -11,6 +11,9 @@
     <p>Gen : <span id="gen"></span></p>
     <p>Life Count : <span id="life-count"></span></p>
     <p>=== === === === ===</p>
+    <div style="left:10px; width:1000px; height:200px;">
+      <canvas id="chart" width="300" height="100"></canvas>
+    </div>
     <p>
       Interval : <input type="tel" id="interval-label" /><button
         id="interval-apply-button"
@@ -23,6 +26,7 @@
     <button id="clear-button">Clear All</button>
 
     <script src="p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <script src="sketch.js"></script>
   </body>
 </html>

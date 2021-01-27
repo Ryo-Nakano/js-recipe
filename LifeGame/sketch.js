@@ -2,16 +2,13 @@
  * 世代とLife数でグラフ書いて
  * 時系列でどう変化したのか、とかリアルタイムで見ることできたら面白そう。
  * 
- * Life数をモニタリングして表示できるように
- * 
  * GASでAPI作って毎回の実行データをスプレッドシートのDBに蓄積 is あり
  * ・初期Life数
  * ・初期Life生成確率
  * ・存続世代数
  * ・定常状態時Life数
  * とかかな...？
- * 
- * 『一時訂正』『再開』できるようにしたい
+ * → 後からデータ分析できるように。
  */
 
 const gen_label = document.getElementById('gen');
@@ -23,14 +20,69 @@ const stop_button = document.getElementById('stop-button');
 const clear_button = document.getElementById('clear-button');
 const interval_apply_button = document.getElementById('interval-apply-button');
 
+//Chart.js関連
+let gen_labels = [];
+let lifeCount_data = [];
+let refreshInterval = 10; //何世代に1回Chartを更新するか
+function refreshChart(){
+
+  // if(gen_labels.length % refreshInterval !== 0){ return }
+
+  let ctx = document.getElementById('chart').getContext('2d'); //チャートを取得
+  let chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels : gen_labels,
+      datasets: [
+        {
+          label: 'Life数',
+          data: lifeCount_data,
+          // borderColor: 'rgba(0, 200, 220, 1)',
+          borderColor: 'rgba(1,189,163,1)',
+          backgroundColor: "rgba(0,0,0,0)"
+        }
+      ],
+    },
+    options: {
+      //各種オプション
+      animation: false, //アニメーション無効化
+      maintainAspectRatio: false,
+      scales: {
+        yAxes: [{ //y軸について
+          scaleLabel: {
+            display: true,                // 表示設定
+            labelString: 'Life Count',    // ラベル
+            // fontColor: "red",             // 文字の色
+            // fontSize: 16                  // フォントサイズ
+          },
+          ticks: {
+            suggestedMax: Math.ceil(lifeCount_data[lifeCount_data.length - 1] / 1000) * 1000,
+            suggestedMin: Math.round(lifeCount_data[lifeCount_data.length - 1] / 1000) * 1000,
+            stepSize: 500, //グラフをどのくらい刻みにするか
+          }
+        }],
+        xAxes: [{ //x軸について
+          scaleLabel: {
+            display: true,                // 表示設定
+            labelString: 'Gen(世代)',    // ラベル
+            // fontColor: "red",             // 文字の色
+            // fontSize: 16                  // フォントサイズ
+          },
+        }]
+      },
+    }
+  });
+}
+
+
 let prevGen = [];
 let genCount = 0; //何世代目か数える変数
 let isPlaying = true; //再生中かどうか管理する変数
 
-const canvas_x = 1000; //Canvasの幅
+const canvas_x = 2000; //Canvasの幅
 const canvas_y = 1000; //Canvasの高さ
 
-const pixel = 100; //セルひとつあたりの幅
+const pixel = 5; //セルひとつあたりの幅
 const width_x = canvas_x / pixel; //セルの横方向の個数
 const width_y = canvas_y / pixel; //セルの縦方向の個数
 const ratio = 10; //初期状態としてLifeが生じる確率(1つのセルあたり)
@@ -38,6 +90,7 @@ const ratio = 10; //初期状態としてLifeが生じる確率(1つのセルあ
 let interval = 5; //どのくらいの頻度で世代を更新していくか(値が小さいほど高頻度)
 interval_label.value = interval;
 
+//Restartボタン
 restart_button.onclick = function(){
   //コロニーを刷新
   prevGen = makeGen(width_x, width_y, ratio);
@@ -50,9 +103,16 @@ restart_button.onclick = function(){
   const lifeCount = countLifeNum();
   lifeCount_label.textContent = lifeCount;
 
+  //Viewを更新
   view(prevGen);
+
+  //Chartを更新
+  gen_labels = [];
+  lifeCount_data = [];
+  refreshChart();
 };
 
+//ClearAllボタン
 clear_button.onclick = function(){
 
   //コロニーを0に
@@ -67,8 +127,14 @@ clear_button.onclick = function(){
   lifeCount_label.textContent = lifeCount;
 
   view(prevGen);
+
+  //Chartを更新
+  gen_labels = [];
+  lifeCount_data = [];
+  refreshChart();
 };
 
+//Stopボタン
 stop_button.onclick = function(){
   isPlaying = !isPlaying; //isPlayingの値を反転
   if(isPlaying == true){
@@ -114,6 +180,13 @@ function draw(){
   //Life数を表示
   const lifeCount = countLifeNum();
   lifeCount_label.textContent = lifeCount;
+
+  if(genCount % refreshInterval === 0){
+    gen_labels.push(genCount);
+    lifeCount_data.push(lifeCount);
+    //Chartを更新
+    refreshChart();
+  }
 }
 
 //マウスがクリックされたときに呼ばれる関数
@@ -144,33 +217,6 @@ function mouseClicked() {
 
   view(prevGen);
 }
-
-
-
-
-//世代
-// let prevGen = [
-//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-//   [0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
-//   [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-//   [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-// ];
-
-// let prevGen = [
-//   [0, 0, 0, 0, 0],
-//   [0, 1, 1, 0, 1],
-//   [1, 0, 0, 0, 0],
-//   [0, 1, 0],
-//   [0, 1, 1],
-//   [0, 0, 0]
-// ];
 
 
 function keyTyped(){
