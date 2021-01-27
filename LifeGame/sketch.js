@@ -1,6 +1,17 @@
 /**
  * 世代とLife数でグラフ書いて
  * 時系列でどう変化したのか、とかリアルタイムで見ることできたら面白そう。
+ * 
+ * Life数をモニタリングして表示できるように
+ * 
+ * GASでAPI作って毎回の実行データをスプレッドシートのDBに蓄積 is あり
+ * ・初期Life数
+ * ・初期Life生成確率
+ * ・存続世代数
+ * ・定常状態時Life数
+ * とかかな...？
+ * 
+ * 『一時訂正』『再開』できるようにしたい
  */
 
 const genLabel = document.getElementById('gen');
@@ -19,9 +30,6 @@ function setup() {
   createCanvas(1500, 1000);
   
   prevGen = makeGen(150,100, 20);
-
-  const w_y = prevGen.length; //genのy軸方向の長さを求める(縦の要素数)
-  const w_x = prevGen[0].length; //genのx軸方向の長さを求める(横の要素数)
 
   setInterval(function(){
     main();
