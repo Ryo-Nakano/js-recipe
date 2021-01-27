@@ -27,10 +27,10 @@ let prevGen = [];
 let genCount = 0; //何世代目か数える変数
 let isPlaying = true; //再生中かどうか管理する変数
 
-const canvas_x = 2000; //Canvasの幅
+const canvas_x = 1000; //Canvasの幅
 const canvas_y = 1000; //Canvasの高さ
 
-const pixel = 5; //セルひとつあたりの幅
+const pixel = 100; //セルひとつあたりの幅
 const width_x = canvas_x / pixel; //セルの横方向の個数
 const width_y = canvas_y / pixel; //セルの縦方向の個数
 const ratio = 10; //初期状態としてLifeが生じる確率(1つのセルあたり)
@@ -115,6 +115,36 @@ function draw(){
   const lifeCount = countLifeNum();
   lifeCount_label.textContent = lifeCount;
 }
+
+//マウスがクリックされたときに呼ばれる関数
+function mouseClicked() {
+  // console.log('(mouseX : ' + mouseX + ', mouseY : ' + mouseY + ')');
+  
+  //クリックされた地点がCanvasの外側だったとき → 処理離脱
+  if(mouseX < 0 ||
+     mouseY < 0 ||
+     mouseX > canvas_x ||
+     mouseY > canvas_y){ return }
+  
+  let x_cell = floor(mouseX / pixel);
+  let y_cell = floor(mouseY / pixel);
+  console.log('(x : ' + x_cell + ', y : ' + y_cell + ')');
+
+  const targetCell = prevGen[y_cell][x_cell];
+  console.log('value : ' + targetCell);
+
+  //クリックしたセルが死んでいるとき
+  if(targetCell === 0){
+    prevGen[y_cell][x_cell] = 1; //生きているセルに変える
+  }
+  //クリックしたセルが生きているとき
+  else{
+    prevGen[y_cell][x_cell] = 0; //死んでいるセルに変える
+  }
+
+  view(prevGen);
+}
+
 
 
 
