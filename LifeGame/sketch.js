@@ -1,6 +1,4 @@
 /**
- * 世代とLife数でグラフ書いて
- * 時系列でどう変化したのか、とかリアルタイムで見ることできたら面白そう。
  * 
  * GASでAPI作って毎回の実行データをスプレッドシートのDBに蓄積 is あり
  * ・初期Life数
@@ -8,6 +6,7 @@
  * ・存続世代数
  * ・定常状態時Life数
  * とかかな...？
+ * 
  * → 後からデータ分析できるように。
  */
 
@@ -19,14 +18,13 @@ const restart_button = document.getElementById('restart-button');
 const stop_button = document.getElementById('stop-button');
 const clear_button = document.getElementById('clear-button');
 const interval_apply_button = document.getElementById('interval-apply-button');
+const centerOnly_button = document.getElementById('center-only-button');
 
 //Chart.js関連
 let gen_labels = [];
 let lifeCount_data = [];
 let refreshInterval = 10; //何世代に1回Chartを更新するか
 function refreshChart(){
-
-  // if(gen_labels.length % refreshInterval !== 0){ return }
 
   let ctx = document.getElementById('chart').getContext('2d'); //チャートを取得
   let chart = new Chart(ctx, {
@@ -56,8 +54,8 @@ function refreshChart(){
             // fontSize: 16                  // フォントサイズ
           },
           ticks: {
-            suggestedMax: Math.ceil(lifeCount_data[lifeCount_data.length - 1] / 1000) * 1000,
-            suggestedMin: Math.round(lifeCount_data[lifeCount_data.length - 1] / 1000) * 1000,
+            suggestedMax: Math.ceil(lifeCount_data[lifeCount_data.length - 1] / 100) * 100,
+            suggestedMin: Math.round(lifeCount_data[lifeCount_data.length - 1] / 100) * 100,
             stepSize: 500, //グラフをどのくらい刻みにするか
           }
         }],
@@ -74,7 +72,6 @@ function refreshChart(){
   });
 }
 
-
 let prevGen = [];
 let genCount = 0; //何世代目か数える変数
 let isPlaying = true; //再生中かどうか管理する変数
@@ -82,10 +79,10 @@ let isPlaying = true; //再生中かどうか管理する変数
 const canvas_x = 2000; //Canvasの幅
 const canvas_y = 1000; //Canvasの高さ
 
-const pixel = 5; //セルひとつあたりの幅
+const pixel = 4; //セルひとつあたりの幅
 const width_x = canvas_x / pixel; //セルの横方向の個数
 const width_y = canvas_y / pixel; //セルの縦方向の個数
-const ratio = 10; //初期状態としてLifeが生じる確率(1つのセルあたり)
+const ratio = 20; //初期状態としてLifeが生じる確率(1つのセルあたり)
 
 let interval = 5; //どのくらいの頻度で世代を更新していくか(値が小さいほど高頻度)
 interval_label.value = interval;
@@ -145,6 +142,28 @@ stop_button.onclick = function(){
   }
 
 };
+
+//CenterOnlyボタン
+centerOnly_button.onclick = function(){
+  //コロニーを刷新
+  prevGen = makeGen_centerOnly(width_x, width_y, ratio);
+
+  //世代数の表示を更新
+  genCount = 0;
+  gen_label.textContent = genCount;
+
+  //Life数の表示を更新
+  const lifeCount = countLifeNum();
+  lifeCount_label.textContent = lifeCount;
+
+  //Viewを更新
+  view(prevGen);
+
+  //Chartを更新
+  gen_labels = [];
+  lifeCount_data = [];
+  refreshChart();
+}
 
 interval_apply_button.onclick = function(){
   const interval_value = interval_label.value;
@@ -351,6 +370,52 @@ function makeGen(x, y, ratio){ //ratioはセルが"生きているセル"にな�
         gen_row.push(0);
       }
     }
+    gen.push(gen_row);
+  }
+
+  return gen;
+}
+
+//Genを作る関数 _画面の中央部のみ
+function makeGen_centerOnly(x, y, ratio){ //ratioはセルが"生きているセル"になる確率
+  let gen = [];
+
+  for(let i_y = 0; i_y < y; i_y++){
+    let gen_row = [];
+
+    const marginY_head = width_y / 2 / 2;
+    const marginY_end = width_y - (width_y / 2 / 2);
+
+    //y軸方向において、中心位置が対象ではないとき
+    if(i_y < marginY_head || i_y > marginY_end){
+      for(let i = 0; i < width_x; i++){
+        gen_row.push(0);
+      }
+    }
+    //y軸方向において、中心位置が対象のとき
+    else{
+      for(let j_x = 0; j_x < x; j_x++){
+
+        const marginX_head = width_x / 2 / 2;
+        const marginX_end = width_x - (width_y / 2 / 2);
+
+        //x軸方向において、中心位置が対象ではないとき
+        if(j_x < marginX_head || j_x > marginX_end){
+          gen_row.push(0);
+        }
+        //x軸方向において、中心位置が対象のとき
+        else{
+          let r = getRandomIntInclusive(0, 101);
+          if(r < ratio){
+            gen_row.push(1);
+          }
+          else{
+            gen_row.push(0);
+          }
+        }
+      }
+    }
+    
     gen.push(gen_row);
   }
 
