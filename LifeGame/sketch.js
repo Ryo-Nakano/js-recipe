@@ -13,6 +13,7 @@
 const gen_label = document.getElementById('gen');
 const lifeCount_label = document.getElementById('life-count');
 const interval_label = document.getElementById('interval-label');
+const fillingRate_label = document.getElementById('filling-rate');
 
 const restart_button = document.getElementById('restart-button');
 const stop_button = document.getElementById('stop-button');
@@ -76,7 +77,7 @@ let prevGen = [];
 let genCount = 0; //何世代目か数える変数
 let isPlaying = true; //再生中かどうか管理する変数
 
-const canvas_x = 2000; //Canvasの幅
+const canvas_x = 2500; //Canvasの幅
 const canvas_y = 1000; //Canvasの高さ
 
 const pixel = 4; //セルひとつあたりの幅
@@ -100,6 +101,10 @@ restart_button.onclick = function(){
   const lifeCount = countLifeNum();
   lifeCount_label.textContent = lifeCount;
 
+  //充填率を表示を更新
+  const fillingRate = Math.round((lifeCount / (width_x * width_y)) * 100 * 100) / 100;
+  fillingRate_label.textContent = fillingRate;
+
   //Viewを更新
   view(prevGen);
 
@@ -122,6 +127,10 @@ clear_button.onclick = function(){
   //Life数の表示を更新
   const lifeCount = countLifeNum();
   lifeCount_label.textContent = lifeCount;
+
+  //充填率の表示を更新
+  const fillingRate = Math.round((lifeCount / (width_x * width_y)) * 100 * 100) / 100;
+  fillingRate_label.textContent = fillingRate;
 
   view(prevGen);
 
@@ -155,6 +164,10 @@ centerOnly_button.onclick = function(){
   //Life数の表示を更新
   const lifeCount = countLifeNum();
   lifeCount_label.textContent = lifeCount;
+
+  //充填率の表示を更新
+  const fillingRate = Math.round((lifeCount / (width_x * width_y)) * 100 * 100) / 100;
+  fillingRate_label.textContent = fillingRate;
 
   //Viewを更新
   view(prevGen);
@@ -199,6 +212,10 @@ function draw(){
   //Life数を表示
   const lifeCount = countLifeNum();
   lifeCount_label.textContent = lifeCount;
+
+  //充填率を表示
+  const fillingRate = Math.round((lifeCount / (width_x * width_y)) * 100 * 100) / 100;
+  fillingRate_label.textContent = fillingRate;
 
   if(genCount % refreshInterval === 0){
     gen_labels.push(genCount);
@@ -282,7 +299,8 @@ function main(){
       else{
 
         //周囲に生きているセルが3つのとき
-        if(lifeCount === 3){
+        // if(lifeCount === 3 || lifeCount === 7){ //繁殖力増強モード
+          if(lifeCount === 3){
           nextCell = 1;
           // console.log('セル誕生！！');
         }
@@ -397,7 +415,7 @@ function makeGen_centerOnly(x, y, ratio){ //ratioはセルが"生きているセ
       for(let j_x = 0; j_x < x; j_x++){
 
         const marginX_head = width_x / 2 / 2;
-        const marginX_end = width_x - (width_y / 2 / 2);
+        const marginX_end = width_x - (width_x / 2 / 2);
 
         //x軸方向において、中心位置が対象ではないとき
         if(j_x < marginX_head || j_x > marginX_end){
