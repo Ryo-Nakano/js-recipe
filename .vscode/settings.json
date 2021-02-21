@@ -1,4 +1,47 @@
 {
   "extensions.ignoreRecommendations": false,
-  "liveServer.settings.port": 5501
+  "liveServer.settings.port": 5501,
+
+  // ここから
+  // エキスパートコースでの設定
+  //
+  // 一般設定
+  //
+  "editor.renderLineHighlight": "all", // 選択行を行番号含めすべてハイライト
+  "editor.renderWhitespace": "boundary", // 空白文字を表示する
+  "window.title": "${activeEditorMedium}${separator}${rootName}", // ファイル名を詳しく表示
+  //
+  // Emmet 設定
+  //
+  "emmet.triggerExpansionOnTab": true, // tabキーで変換
+  "emmet.variables": {
+    "lang": "ja" // ! で展開されるテンプレートの lang を ja に
+  },
+  //
+  // ESLint & Prettier 設定
+  //
+  "editor.codeActionsOnSave": {
+    // ファイルを保存したときに、エラーを ESlint で検証する
+    "source.fixAll.eslint": true
+  },
+  "vetur.validation.template": false, // Vetur によるコードチェックを行わない
+  "eslint.validate": [
+    // ESLint によるコードチェックを、以下の言語について行う
+    "html",
+    "js",
+    "vue"
+  ],
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // フォーマッタを prettier に設定する
+  "editor.formatOnSave": true,
+  "[json]": {
+  
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.suggest.insertMode": "replace",
+    "gitlens.codeLens.scopes": [
+      "document"
+    ]
+  } // ファイルを保存したときに、コードを整形する
+  // ここまで
 }
